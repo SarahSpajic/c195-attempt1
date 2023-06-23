@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.c195.controller.DuplicateReportsController">
+    <ComboBox fx:id="customerChoiceBox" promptText="Select Customer" />
+    <Button text="Generate Report" onAction="#generateReport" />
+
+    <Label text="Total:" />
+    <Label fx:id="totalCountLabel" />
+    <TableView fx:id="customerDuplicateTable" layoutX="83.0" layoutY="241.0" prefHeight="222.0" prefWidth="832.0">
+        <columns>
+            <TableColumn fx:id="name" text="Name" />
+            <TableColumn fx:id="id" text="ID" />
+            <TableColumn fx:id="phoneNumber" text="Phone Number" />
+            <TableColumn fx:id="postal_code" text="Postal Code" />
+            <TableColumn fx:id="address" text="Address" />
+        </columns>
+    </TableView>
+</VBox>

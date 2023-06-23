@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.c195.controller.ContactReportsController">
+    <ComboBox fx:id="contactChoiceBox" promptText="Select Contact ID" />
+    <Button text="Generate Report" onAction="#generateReport" />
+
+    <Label text="Total:" />
+    <Label fx:id="totalCountLabel" />
+    <TableView fx:id="contactAppointmentTable" layoutX="83.0" layoutY="241.0" prefHeight="222.0" prefWidth="832.0">
+        <columns>
+            <TableColumn fx:id="associatedCustomerIDColumn" prefWidth="100" text="Customer ID" />
+            <TableColumn fx:id="appointmentUserIDColumn" text="User ID" />
+            <TableColumn fx:id="appointmentIDColumn" text="Appointment ID" />
+            <TableColumn fx:id="appointmentTitleColumn" text="Title" />
+            <TableColumn fx:id="appointmentDescriptionColumn" text="Description" />
+            <TableColumn fx:id="appointmentTypeColumn" text="Type" />
+            <TableColumn fx:id="appointmentLocationColumn" text="Location" />
+            <TableColumn fx:id="appointmentContactColumn" text="Contact" />
+            <TableColumn fx:id="appointmentStartColumn" text="Start" />
+            <TableColumn fx:id="appointmentEndColumn" text="End" />
+        </columns>
+    </TableView>
+</VBox>

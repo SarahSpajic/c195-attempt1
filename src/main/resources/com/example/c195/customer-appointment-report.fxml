@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.c195.controller.CustomerReportsController">
+    <ComboBox fx:id="customerChoiceBox" promptText="Select Customer ID" />
+    <ComboBox fx:id="monthField" promptText="Enter Month" />
+    <TextField fx:id="appointmentTypeTextField" promptText="Enter Appointment Type" />
+    <Button text="Generate Report" onAction="#generateReport" />
+
+    <Label text="Total:" />
+    <Label fx:id="totalCountLabel" />
+
+</VBox>
