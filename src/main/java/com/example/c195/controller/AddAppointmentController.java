@@ -23,9 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
@@ -73,9 +71,8 @@ public class AddAppointmentController implements Initializable {
         this.connection = connection;
     }
 
-
     @FXML
-    private void addAppointment(ActionEvent event) {
+    private void addAppointment(ActionEvent event) throws IOException {
         String title = titleTextField.getText();
         String description = descriptionTextField.getText();
         String location = locationTextField.getText();
@@ -88,21 +85,27 @@ public class AddAppointmentController implements Initializable {
         LocalDateTime startDateTime = LocalDateTime.of(selectedStartDate, startTime);
         LocalDateTime endDateTime = LocalDateTime.of(selectedEndDate, endTime);
 
+        // Convert the LocalDateTime from PST to UTC before storing in the database
+        ZonedDateTime startDateTimeUTC = startDateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime endDateTimeUTC = endDateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+
         Contact selectedContact = contactChoiceBox.getSelectionModel().getSelectedItem();
         Customer selectedCustomer = customerChoiceBox.getSelectionModel().getSelectedItem();
         int customerId = selectedCustomer.getCustomerID();
 
-        Appointment newAppointment = new Appointment(selectedCustomer.getCustomerID(), title, description, location, selectedContact.getContactID(), type, startDateTime, endDateTime, this.userId);
+        // Store the UTC time in the appointment
+        Appointment newAppointment = new Appointment(selectedCustomer.getCustomerID(), title, description, location, selectedContact.getContactID(), type, startDateTimeUTC.toLocalDateTime(), endDateTimeUTC.toLocalDateTime(), this.userId);
+
         try {
             AppointmentDaoImpl.addAppointment(connection, newAppointment);
-           if (AppointmentDaoImpl.getCustomerAppointments(connection, customerId) == true) {
-               Alert alert = new Alert(Alert.AlertType.INFORMATION);
-               alert.setTitle("Appointment Alert");
-               alert.setHeaderText("Overlapping Appointments");
-               alert.setContentText("Customer " + selectedCustomer.getName()
-                       + " has an overlapping appointment");
-               alert.showAndWait();
-           }
+            if (AppointmentDaoImpl.getCustomerAppointments(connection, customerId)) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Appointment Alert");
+                alert.setHeaderText("Overlapping Appointments");
+                alert.setContentText("Customer " + selectedCustomer.getName()
+                        + " has an overlapping appointment");
+                alert.showAndWait();
+            }
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/c195/dashboard.fxml"));
             Parent root = loader.load();
 
@@ -117,11 +120,18 @@ public class AddAppointmentController implements Initializable {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
-
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/c195/dashboard.fxml"));
+        Parent root = loader.load();
+        DashboardController dashboardController = loader.getController();
+        dashboardController.populateTables();
+        Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.close();
     }
 
 
-        public void setAppointmentList (ObservableList < Appointment > appointmentList) {
+
+    public void setAppointmentList (ObservableList < Appointment > appointmentList) {
             this.appointmentList = appointmentList;
         }
 

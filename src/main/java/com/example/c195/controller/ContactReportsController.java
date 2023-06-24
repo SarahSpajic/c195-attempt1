@@ -81,7 +81,6 @@ import java.util.ResourceBundle;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                populateContactAppointmentTable();
             }
 
             /**
@@ -134,7 +133,6 @@ import java.util.ResourceBundle;
              */
             private void populateContactAppointmentTable() {
                 try {
-
                     ObservableList<Appointment> appointments = AppointmentDaoImpl.getAllWeekAppointments(connection);
                     for (Appointment appointment : appointments) {
                         LocalDateTime localStart = toLocalTimeZone(appointment.getStart());
@@ -156,6 +154,7 @@ import java.util.ResourceBundle;
              */
             @Override
             public void initialize(URL url, ResourceBundle resourceBundle) {
+                populateContactAppointmentTable();
                 try {
                     this.connection = DBConnection.makeConnection();
                 } catch (Exception e) {
@@ -174,6 +173,7 @@ import java.util.ResourceBundle;
                 appointmentContactColumn.setCellValueFactory(new PropertyValueFactory<>("contactId"));
                 contactChoiceBox.getItems();
                 populateContactChoiceBox();
+                populateContactAppointmentTable();
 
             }
 
