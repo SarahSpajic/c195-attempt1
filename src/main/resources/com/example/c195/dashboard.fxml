@@ -11,11 +11,10 @@
 
 <AnchorPane layoutX="50" layoutY="25.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="1057.0" prefWidth="1015.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.c195.controller.DashboardController">
    <TabPane layoutX="57.0" layoutY="474.0" prefHeight="251.0" prefWidth="869.0">
-     <tabs>
+
        <Tab text="Week View">
-         <content>
+
            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="262.0" prefWidth="844.0">
-                  <children>
                        <TableView fx:id="weekAppointmentTable" layoutX="4.0" layoutY="-1.0" prefHeight="222.0" prefWidth="876.0">
                            <columns>
                                <TableColumn fx:id="weekAppointmentCustomerIDColumn" prefWidth="100" text="Customer ID" />
@@ -30,14 +29,11 @@
                                <TableColumn fx:id="weekAppointmentEndColumn" text="End" />
                            </columns>
                        </TableView>
-                  </children>
                </AnchorPane>
-         </content>
+
        </Tab>
        <Tab text="Month View">
-         <content>
            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="223.0" prefWidth="819.0">
-                  <children>
                        <TableView fx:id="monthAppointmentTable" layoutX="-2.0" layoutY="6.0" prefHeight="209.0" prefWidth="868.0">
                            <columns>
                                <TableColumn fx:id="monthAppointmentUserIDColumn" text="User ID" />
@@ -52,11 +48,9 @@
                                <TableColumn fx:id="monthAppointmentEndColumn" text="End" />
                            </columns>
                        </TableView>
-                  </children>
                </AnchorPane>
-         </content>
        </Tab>
-     </tabs>
+
    </TabPane>
  <TableView fx:id="customerTable" layoutX="81.0" layoutY="24.0" prefHeight="193.0" prefWidth="837.0">
      <columns>
@@ -83,20 +77,17 @@
      </columns>
  </TableView>
    <AnchorPane layoutX="-17.0" layoutY="793.0" prefHeight="148.0" prefWidth="1108.0">
-      <children>
-          <Button layoutX="42.0" layoutY="32.0" mnemonicParsing="false" onAction="#addNewCustomer" text="New Customer" />
-          <Button layoutX="238.0" layoutY="102.0" mnemonicParsing="false" onAction="#deleteCustomer" text="Delete Customer" />
-          <Button layoutX="172.0" layoutY="32.0" mnemonicParsing="false" onAction="#updateCustomer" text="Update Customer" />
-          <Button layoutX="300.0" layoutY="32.0" mnemonicParsing="false" onAction="#getCustomerReports" text="Customer Appointment List" />
-          <Button layoutX="695.0" layoutY="108.0" mnemonicParsing="false" onAction="#getContactReports" text="Contact Appointment List" />
-      <Button layoutX="548.0" layoutY="26.0" mnemonicParsing="false" onAction="#scheduleAppointment" text="Create Appointment" />
-          <Button layoutX="695.0" layoutY="26.0" mnemonicParsing="false" onAction="#updateAppointment" text="Update  Appointment" />
-         <Button layoutX="849.0" layoutY="26.0" mnemonicParsing="false" onAction="#deleteAppointment" text="Delete Appointment" />
-         <Button layoutX="42.0" layoutY="102.0" mnemonicParsing="false" onAction="#getDuplicateCustomers" text="Duplicate Customer Report" />
-         <Button fx:id="exit" layoutX="467.0" layoutY="95.0" mnemonicParsing="false" onAction="#exit" prefHeight="26.0" prefWidth="81.0" text="Exit" />
-
-      </children>
+          <Button layoutX="234.0" layoutY="1.0" mnemonicParsing="false" onAction="#deleteCustomer" text="Delete Customer" />
+          <Button layoutX="697.0" layoutY="14.0" mnemonicParsing="false" onAction="#getContactReports" text="Contact Appointment List" />
+         <Button layoutX="47.0" layoutY="1.0" mnemonicParsing="false" onAction="#getDuplicateCustomers" text="Duplicate Customer Report" />
+         <Button fx:id="exit" layoutX="447.0" layoutY="39.0" mnemonicParsing="false" onAction="#exit" prefHeight="26.0" prefWidth="81.0" text="Exit" />
    </AnchorPane>
    <ScrollBar layoutX="1039.0" layoutY="181.0" orientation="VERTICAL" prefHeight="966.0" prefWidth="0.0" />
    <Pane prefHeight="200.0" prefWidth="200.0" />
+    <Button layoutX="60.0" layoutY="761.0" mnemonicParsing="false" onAction="#addNewCustomer" text="New Customer" />
+    <Button layoutX="172.0" layoutY="761.0" mnemonicParsing="false" onAction="#updateCustomer" text="Update Customer" />
+    <Button layoutX="309.0" layoutY="761.0" mnemonicParsing="false" onAction="#getCustomerReports" text="Customer Appointment List" />
+<Button layoutX="492.0" layoutY="763.0" mnemonicParsing="false" onAction="#scheduleAppointment" text="Create Appointment" />
+    <Button layoutX="643.0" layoutY="763.0" mnemonicParsing="false" onAction="#updateAppointment" text="Update  Appointment" />
+   <Button layoutX="792.0" layoutY="763.0" mnemonicParsing="false" onAction="#deleteAppointment" text="Delete Appointment" />
 </AnchorPane>

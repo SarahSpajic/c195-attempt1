@@ -29,8 +29,10 @@ import java.util.ResourceBundle;
 
 public class CustomerController implements Initializable {
 
+    public TextField addressField2;
+    public TextField addressField3;
     private Customer selectedCustomer;
-    private int selectedIndex;
+
     @FXML
     private TableView<Customer> customerTable;
 
@@ -40,6 +42,7 @@ public class CustomerController implements Initializable {
     @FXML
     private ComboBox<FirstLevelDivision> stateComboBox;
 
+    @FXML
     private int customerID;
     @FXML
     private TextField customerIdField;
