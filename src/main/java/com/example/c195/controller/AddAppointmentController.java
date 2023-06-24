@@ -73,6 +73,7 @@ public class AddAppointmentController implements Initializable {
         this.connection = connection;
     }
 
+
     @FXML
     private void addAppointment(ActionEvent event) {
         String title = titleTextField.getText();

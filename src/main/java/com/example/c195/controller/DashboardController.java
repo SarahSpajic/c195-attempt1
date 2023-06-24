@@ -173,18 +173,23 @@ public class DashboardController implements Initializable {
         alert.showAndWait();
     }
     public LocalDateTime toLocalTimeZone(LocalDateTime dateTimeInUTC) {
+        System.out.println(dateTimeInUTC);
         ZonedDateTime zdt = dateTimeInUTC.atZone(ZoneId.of("UTC"));
+        System.out.println(zdt);
         ZonedDateTime localZdt = zdt.withZoneSameInstant(ZoneId.systemDefault());
+        System.out.println(localZdt);
         return localZdt.toLocalDateTime();
     }
 
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         try {
             this.connection = DBConnection.makeConnection();
-
+            populateAppointmentTable();
+            populateWeekAppointmentTable();
+            populateMonthAppointmentTable();
             //customer table
             customerIDColumn.setCellValueFactory(new PropertyValueFactory<>("customerID"));
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -304,7 +309,6 @@ public class DashboardController implements Initializable {
      */
     private void populateWeekAppointmentTable() {
         try {
-
             ObservableList<Appointment> appointments = AppointmentDaoImpl.getAllWeekAppointments(connection);
             for (Appointment appointment : appointments) {
                 LocalDateTime localStart = toLocalTimeZone(appointment.getStart());
@@ -319,11 +323,8 @@ public class DashboardController implements Initializable {
         }
     }
 
-    /** populates the month appointment table
-     */
     private void populateMonthAppointmentTable() {
         try {
-
             ObservableList<Appointment> appointments = AppointmentDaoImpl.getAllMonthAppointments(connection);
             for (Appointment appointment : appointments) {
                 LocalDateTime localStart = toLocalTimeZone(appointment.getStart());
@@ -333,11 +334,11 @@ public class DashboardController implements Initializable {
                 appointment.setEnd(localEnd);
             }
             monthAppointmentTable.setItems(appointments);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     /** removes the selected customer from the database.
      * @throws SQLException
      */
