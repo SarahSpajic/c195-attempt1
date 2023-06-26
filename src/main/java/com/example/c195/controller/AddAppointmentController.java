@@ -120,13 +120,6 @@ public class AddAppointmentController implements Initializable {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/c195/dashboard.fxml"));
-        Parent root = loader.load();
-        DashboardController dashboardController = loader.getController();
-        dashboardController.populateTables();
-        Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.close();
     }
 
 

@@ -7,6 +7,8 @@ import javafx.collections.ObservableList;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class AppointmentDaoImpl {
     /**
@@ -71,12 +73,15 @@ public class AppointmentDaoImpl {
      */
 
     public static ObservableList<Appointment> getAllAppointments(Connection connection) throws SQLException {
-        String query = "SELECT customer_id, appointment_id, title, description, location, type,  contact_id,  start, end, user_id " +
+        String query = "SELECT customer_id, appointment_id, title, description, location, type, contact_id, start, end, user_id " +
                 "FROM appointments;";
 
         PreparedStatement ps = connection.prepareStatement(query);
         ResultSet rs = ps.executeQuery();
         ObservableList<Appointment> appointmentObservableList = FXCollections.observableArrayList();
+
+        ZoneId utcZone = ZoneId.of("UTC");
+        ZoneId localZone = ZoneId.systemDefault(); // Replace with your desired local time zone
 
         while (rs.next()) {
             int customerId = rs.getInt("customer_id");
@@ -86,16 +91,21 @@ public class AppointmentDaoImpl {
             String appointmentLocation = rs.getString("location");
             String appointmentType = rs.getString("type");
             int appointmentContact = rs.getInt("contact_id");
-            LocalDateTime appointmentStart = rs.getObject("start", LocalDateTime.class);
-            LocalDateTime appointmentEnd = rs.getObject("end", LocalDateTime.class);
+            LocalDateTime appointmentStartUTC = rs.getObject("start", LocalDateTime.class);
+            LocalDateTime appointmentEndUTC = rs.getObject("end", LocalDateTime.class);
+
+            ZonedDateTime startDateTime = appointmentStartUTC.atZone(utcZone).withZoneSameInstant(localZone);
+            ZonedDateTime endDateTime = appointmentEndUTC.atZone(utcZone).withZoneSameInstant(localZone);
+
             int userId = rs.getInt("user_id");
 
-            Appointment appointment = new Appointment(customerId, appointmentId, appointmentTitle, appointmentDescription, appointmentLocation, appointmentContact, appointmentType, appointmentStart, appointmentEnd, userId);
+            Appointment appointment = new Appointment(customerId, appointmentId, appointmentTitle, appointmentDescription, appointmentLocation, appointmentContact, appointmentType, startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), userId);
             appointmentObservableList.add(appointment);
         }
 
         return appointmentObservableList;
     }
+
 
     /**
      * This method returns appointments based on a customer id.This is used inside the appointment dao to
