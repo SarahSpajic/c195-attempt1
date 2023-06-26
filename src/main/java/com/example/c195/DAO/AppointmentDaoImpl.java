@@ -47,6 +47,8 @@ public class AppointmentDaoImpl {
      */
     private static ObservableList<Appointment> getAppointmentsFromResultSet(ResultSet rs) throws SQLException {
         ObservableList<Appointment> appointmentObservableList = FXCollections.observableArrayList();
+        ZoneId utcZone = ZoneId.of("UTC");
+        ZoneId localZone = ZoneId.systemDefault();
 
         while (rs.next()) {
             int customerId = rs.getInt("customer_id");
@@ -56,32 +58,41 @@ public class AppointmentDaoImpl {
             String appointmentLocation = rs.getString("location");
             String appointmentType = rs.getString("type");
             int appointmentContact = rs.getInt("contact_id");
-            LocalDateTime appointmentStart = rs.getObject("start", LocalDateTime.class);
-            LocalDateTime appointmentEnd = rs.getObject("end", LocalDateTime.class);
+            LocalDateTime appointmentStartUTC = rs.getObject("start", LocalDateTime.class);
+            LocalDateTime appointmentEndUTC = rs.getObject("end", LocalDateTime.class);
+
+            ZonedDateTime startDateTimeUTC = appointmentStartUTC.atZone(utcZone);
+            ZonedDateTime endDateTimeUTC = appointmentEndUTC.atZone(utcZone);
+
+            ZonedDateTime startDateTimeLocal = startDateTimeUTC.withZoneSameInstant(localZone);
+            ZonedDateTime endDateTimeLocal = endDateTimeUTC.withZoneSameInstant(localZone);
+
+            LocalDateTime appointmentStart = startDateTimeLocal.toLocalDateTime();
+            LocalDateTime appointmentEnd = endDateTimeLocal.toLocalDateTime();
+
             int userId = rs.getInt("user_id");
 
             Appointment appointment = new Appointment(customerId, appointmentId, appointmentTitle, appointmentDescription, appointmentLocation, appointmentContact, appointmentType, appointmentStart, appointmentEnd, userId);
 
             appointmentObservableList.add(appointment);
-
         }
 
         return appointmentObservableList;
     }
+
     /**
      * This method returns all appointments, which is used to populate the appointment table in the dashboard.
      */
 
     public static ObservableList<Appointment> getAllAppointments(Connection connection) throws SQLException {
-        String query = "SELECT customer_id, appointment_id, title, description, location, type, contact_id, start, end, user_id " +
-                "FROM appointments;";
+        String query = "SELECT customer_id, appointment_id, title, description, location, type, contact_id, start, end, user_id FROM appointments;";
 
         PreparedStatement ps = connection.prepareStatement(query);
         ResultSet rs = ps.executeQuery();
         ObservableList<Appointment> appointmentObservableList = FXCollections.observableArrayList();
 
         ZoneId utcZone = ZoneId.of("UTC");
-        ZoneId localZone = ZoneId.systemDefault(); // Replace with your desired local time zone
+        ZoneId localZone = ZoneId.systemDefault();
 
         while (rs.next()) {
             int customerId = rs.getInt("customer_id");

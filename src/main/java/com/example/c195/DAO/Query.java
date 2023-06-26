@@ -12,7 +12,7 @@ public class Query {
         query=q;
         try{
             stmt=conn.createStatement();
-            // determine query execution
+
             if(query.toLowerCase().startsWith("select"))
                 result=stmt.executeQuery(q);
             if(query.toLowerCase().startsWith("delete")||query.toLowerCase().startsWith("insert")||query.toLowerCase().startsWith("update"))

@@ -163,22 +163,13 @@ public class Appointment {
         this.endDateTime = utc.toLocalDateTime();
     }
 
-    public LocalDateTime getStart() {
-        if (this.startDateTime == null) {
-            return null;
-        }
 
-        LocalDateTime utc = this.startDateTime;
-        ZonedDateTime zdt = utc.atZone(ZoneId.of("UTC"));
-        ZonedDateTime localZdt = zdt.withZoneSameInstant(ZoneId.systemDefault());
-        return localZdt.toLocalDateTime();
+    public LocalDateTime getStart() {
+        return startDateTime;
     }
 
     public LocalDateTime getEnd() {
-        LocalDateTime utc = this.endDateTime;
-        ZonedDateTime zdt = utc.atZone(ZoneId.of("UTC"));
-        ZonedDateTime localZdt = zdt.withZoneSameInstant(ZoneId.systemDefault());
-        return localZdt.toLocalDateTime();
+        return endDateTime;
     }
 
 

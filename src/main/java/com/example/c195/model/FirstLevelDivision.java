@@ -6,7 +6,7 @@ import javafx.collections.ObservableList;
 public class FirstLevelDivision {
     private int divisionID;
     private String divisionName;
-    private int countryID; // Assuming there's a relationship with a Country table
+    private int countryID;
     private ObservableList<FirstLevelDivision> firstLevelDivisions = FXCollections.observableArrayList();
 
     public FirstLevelDivision(int divisionID, String divisionName, int countryID) {

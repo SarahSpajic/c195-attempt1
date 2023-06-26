@@ -35,9 +35,9 @@ public class UserDaoImpl extends User {
     public static boolean validateLogin(String username, String password) {
         int userId = validateUser(username, password);
         if (userId == -1) {
-            return false; // user not found or password incorrect
+            return false;
         } else {
-            return true; // user found and password matches
+            return true;
         }
     }
 }

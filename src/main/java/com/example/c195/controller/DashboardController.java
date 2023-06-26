@@ -297,32 +297,41 @@ public class DashboardController implements Initializable {
      */
     private void populateWeekAppointmentTable() {
         try {
-
             ObservableList<Appointment> appointments = AppointmentDaoImpl.getAllWeekAppointments(connection);
             for (Appointment appointment : appointments) {
-                weekAppointmentTable.setItems(appointments);
+                LocalDateTime startUTC = appointment.getStart();
+                LocalDateTime endUTC = appointment.getEnd();
+                LocalDateTime startLocal = toLocalTimeZone(startUTC);
+                LocalDateTime endLocal = toLocalTimeZone(endUTC);
+                appointment.setStart(startLocal);
+                appointment.setEnd(endLocal);
             }
-
+            weekAppointmentTable.setItems(appointments);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     /** populates the month appointment table
      */
     private void populateMonthAppointmentTable() {
         try {
-
             ObservableList<Appointment> appointments = AppointmentDaoImpl.getAllMonthAppointments(connection);
             for (Appointment appointment : appointments) {
-
+                LocalDateTime startUTC = appointment.getStart();
+                LocalDateTime endUTC = appointment.getEnd();
+                LocalDateTime startLocal = toLocalTimeZone(startUTC);
+                LocalDateTime endLocal = toLocalTimeZone(endUTC);
+                appointment.setStart(startLocal);
+                appointment.setEnd(endLocal);
             }
             monthAppointmentTable.setItems(appointments);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     /** removes the selected customer from the database.
      * @throws SQLException
      */
