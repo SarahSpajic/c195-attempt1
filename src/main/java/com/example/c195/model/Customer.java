@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Customer {
     private int divisionID;
+    private String divisionName;
     private List<Appointment> associatedAppointments = FXCollections.observableArrayList();
     private int customerID;
     private String name;
@@ -26,6 +27,13 @@ public class Customer {
     }
 
 
+    public String getDivisionName() {
+        return divisionName;
+    }
+
+    public void setDivisionName(String divisionName) {
+        this.divisionName = divisionName;
+    }
     public Customer(String name) {
     }
 
@@ -39,6 +47,7 @@ public class Customer {
         this.postalCode = postalCode;
         this.phoneNumber = phoneNumber;
     }
+
 
     public List<Appointment> getAssociatedAppointments() {
         return associatedAppointments;
@@ -95,6 +104,7 @@ public class Customer {
     public void setDivisionID(int divisionID) {
         this.divisionID = divisionID;
     }
+
 
     public Customer addCustomer(Customer newCustomer) {
         return newCustomer;

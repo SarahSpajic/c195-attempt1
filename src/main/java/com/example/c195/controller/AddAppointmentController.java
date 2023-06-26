@@ -17,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AddAppointmentController implements Initializable {
@@ -96,11 +98,18 @@ public class AddAppointmentController implements Initializable {
         Customer selectedCustomer = customerChoiceBox.getSelectionModel().getSelectedItem();
         int customerId = selectedCustomer.getCustomerID();
 
-        Appointment newAppointment = new Appointment(selectedCustomer.getCustomerID(), title, description, location, selectedContact.getContactID(), type, startDateTimeUTC.toLocalDateTime(), endDateTimeUTC.toLocalDateTime(), this.userId);
+        Appointment newAppointment = new Appointment(
+                customerId, title, description, location, selectedContact.getContactID(), type,
+                startDateTimeUTC.toLocalDateTime(), endDateTimeUTC.toLocalDateTime(), this.userId
+        );
 
         try {
-            AppointmentDaoImpl.addAppointment(connection, newAppointment);
-            if (AppointmentDaoImpl.getCustomerAppointments(connection, customerId)) {
+            Pair<List<Appointment>, Boolean> result = AppointmentDaoImpl.getCustomerAppointments(connection, customerId);
+
+            List<Appointment> customerAppointments = result.getKey();
+            boolean hasOverlap = result.getValue();
+
+            if (hasOverlap) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Appointment Alert");
                 alert.setHeaderText("Overlapping Appointments");
@@ -109,14 +118,18 @@ public class AddAppointmentController implements Initializable {
                 return;
             }
 
-                if (isWeekendAppointment(newAppointment)) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Weekend Appointment");
-                    alert.setContentText("Appointments cannot be booked on weekends.");
-                    alert.showAndWait();
-                    return;
-                }
+            // ... (proceed with saving the appointment)
+
+            if (!isBusinessHours(newAppointment)) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Weekend or After-Hours Appointment");
+                alert.setContentText("Appointments cannot be booked outside of office hours or on weekends.");
+                alert.showAndWait();
+                return;
+            }
+
+            // ... (remaining code)
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/c195/dashboard.fxml"));
             Parent root = loader.load();
@@ -127,17 +140,30 @@ public class AddAppointmentController implements Initializable {
             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.close();
-
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
-    private boolean isWeekendAppointment(Appointment appointment) {
+    /** this method returns a boolean for appointments that are trying to be booked for
+         * weekends or outside 8:00 am and 10:00 pm EST.  */
+
+    private boolean isBusinessHours(Appointment appointment) {
         DayOfWeek dayOfWeek = appointment.getStart().getDayOfWeek();
-        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
+        boolean isWeekend = dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
+        ZonedDateTime appointmentStart = appointment.getStart().atZone(ZoneId.systemDefault());
+        ZonedDateTime appointmentEnd = appointment.getEnd().atZone(ZoneId.systemDefault());
+        ZonedDateTime appointmentStartEST = appointmentStart.withZoneSameInstant(ZoneId.of("America/New_York"));
+        ZonedDateTime appointmentEndEST = appointmentEnd.withZoneSameInstant(ZoneId.of("America/New_York"));
+        LocalTime startTimeEST = appointmentStartEST.toLocalTime();
+        LocalTime endTimeEST = appointmentEndEST.toLocalTime();
+        boolean isBusinessHours = !isWeekend && startTimeEST.isAfter(LocalTime.of(8, 0)) && endTimeEST.isBefore(LocalTime.of(20, 0));
+        return isBusinessHours;
     }
+
+
+
+
 
 
     public void setAppointmentList (ObservableList < Appointment > appointmentList) {

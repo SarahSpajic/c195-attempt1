@@ -3,8 +3,10 @@ package com.example.c195.controller;
 import com.example.c195.DAO.AppointmentDaoImpl;
 import com.example.c195.DAO.CustomerDaoImpl;
 import com.example.c195.DAO.DBConnection;
+import com.example.c195.DAO.FirstLevelDivisionDaoImpl;
 import com.example.c195.model.Appointment;
 import com.example.c195.model.Customer;
+import com.example.c195.model.FirstLevelDivision;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -189,7 +191,7 @@ public class DashboardController implements Initializable {
             customerIDColumn.setCellValueFactory(new PropertyValueFactory<>("customerID"));
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
             addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
-            divisionColumn.setCellValueFactory(new PropertyValueFactory<>("divisionID"));
+            divisionColumn.setCellValueFactory(new PropertyValueFactory<>("divisionName"));
             postalCodeColumn.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
             phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
             //appointments table
@@ -245,17 +247,34 @@ public class DashboardController implements Initializable {
         populateMonthAppointmentTable();
         populateWeekAppointmentTable();
     }
-    /** populates the customer table */
+    /** populates the customer table with the customers and the division name */
+
     private void populateCustomerTable() {
         try {
             ObservableList<Customer> customers = CustomerDaoImpl.getAllCustomers(connection);
+
+            for (Customer customer : customers) {
+                int divisionId = customer.getDivisionID();
+                FirstLevelDivision division = FirstLevelDivisionDaoImpl.getFirstLevelDivisionById(connection, divisionId);
+
+                if (division != null) {
+                    String divisionName = division.getDivisionName();
+                    customer.setDivisionName(divisionName);
+                    System.out.println(divisionName);
+                }
+            }
+
             customerTable.setItems(customers);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
+
+
+
+// ...
+
+
     /** opens the add customer screen
      * @throws IOException
      * */
@@ -313,25 +332,22 @@ public class DashboardController implements Initializable {
     }
 
 
+
+
     /** populates the month appointment table
      */
     private void populateMonthAppointmentTable() {
         try {
             ObservableList<Appointment> appointments = AppointmentDaoImpl.getAllMonthAppointments(connection);
             for (Appointment appointment : appointments) {
-                LocalDateTime startUTC = appointment.getStart();
-                LocalDateTime endUTC = appointment.getEnd();
-                LocalDateTime startLocal = toLocalTimeZone(startUTC);
-                LocalDateTime endLocal = toLocalTimeZone(endUTC);
-                appointment.setStart(startLocal);
-                appointment.setEnd(endLocal);
+                appointment.setStart(toLocalTimeZone(appointment.getStart()));
+                appointment.setEnd(toLocalTimeZone(appointment.getEnd()));
             }
             monthAppointmentTable.setItems(appointments);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
     /** removes the selected customer from the database.
      * @throws SQLException
      */

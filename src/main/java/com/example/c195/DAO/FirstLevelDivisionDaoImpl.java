@@ -8,17 +8,18 @@ import javafx.collections.ObservableList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
+import java.sql.SQLException;
 
 
 public class FirstLevelDivisionDaoImpl {
     private Connection connection;
 
+
+
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
     public ObservableList<Country> getAllCountries() throws Exception {
-        Connection connection = DBConnection.makeConnection();
         String query = "SELECT * FROM countries";
 
         PreparedStatement ps = connection.prepareStatement(query);
@@ -36,26 +37,52 @@ public class FirstLevelDivisionDaoImpl {
 
         return countries;
     }
-    /** This method checks for the divisions(states) associated with each country id */
-    public ObservableList<FirstLevelDivision> getDivisionsByCountryID(int countryID) throws Exception {
-        Connection connection = DBConnection.makeConnection();
-        String query = "SELECT * FROM first_level_divisions WHERE Country_ID = ?";
+    public static FirstLevelDivision getFirstLevelDivisionById(Connection connection, int divisionId) throws SQLException {
+        String query = "SELECT * FROM first_level_divisions WHERE Division_ID = ?";
 
         PreparedStatement ps = connection.prepareStatement(query);
-        ps.setInt(1, countryID);
+        ps.setInt(1, divisionId);
         ResultSet rs = ps.executeQuery();
 
-        ObservableList<FirstLevelDivision> divisions = FXCollections.observableArrayList();
-
-        while (rs.next()) {
+        if (rs.next()) {
             int divisionID = rs.getInt("Division_ID");
             String divisionName = rs.getString("Division");
 
-            FirstLevelDivision division = new FirstLevelDivision(divisionID, divisionName, countryID);
-            divisions.add(division);
+            return new FirstLevelDivision(divisionID, divisionName);
         }
 
-        return divisions;
+        return null;
     }
+
+
+    /** This method checks for the divisions(states) associated with each country id */
+    public ObservableList<FirstLevelDivision> getDivisionsByCountryID(int divisionId) throws SQLException {
+        ResultSet rs = null;
+        try {
+            String query = "SELECT * FROM first_level_divisions WHERE Country_ID = ?";
+
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, divisionId);
+            rs = ps.executeQuery();
+
+            ObservableList<FirstLevelDivision> divisions = FXCollections.observableArrayList();
+
+            while (rs.next()) {
+                int divisionID = rs.getInt("Division_ID");
+                String divisionName = rs.getString("Division");
+
+                FirstLevelDivision division = new FirstLevelDivision(divisionID, divisionName, divisionID);
+                divisions.add(division);
+            }
+
+            return divisions;
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+        }
+    }
+
+
 
 }

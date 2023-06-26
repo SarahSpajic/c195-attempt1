@@ -206,7 +206,7 @@ public class UpdateAppointmentController implements Initializable {
     /**
      * Lambda function to filter a specific customer from a list of customers.
      * The function uses the customer ID for filtering.
-    * @return A boolean value indicating whether the customer object's ID matches the provided ID.
+    * A boolean value indicating whether the customer object's ID matches the provided ID.
      * @param url
      * @param resourceBundle
      */

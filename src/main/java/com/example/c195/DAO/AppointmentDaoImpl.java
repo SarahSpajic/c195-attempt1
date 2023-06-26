@@ -3,12 +3,14 @@ package com.example.c195.DAO;
 import com.example.c195.model.Appointment;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 public class AppointmentDaoImpl {
     /**
@@ -126,7 +128,7 @@ public class AppointmentDaoImpl {
      * this is used in the AddAppointmentController to generate an alert when the usr has overlapping appointments
      * @param customerId is used to identify the customer's appointment(s) being searched.
      */
-    public static boolean getCustomerAppointments(Connection connection, int customerId) throws SQLException {
+    public static Pair<List<Appointment>, Boolean> getCustomerAppointments(Connection connection, int customerId) throws SQLException {
         String query = "SELECT start, end, user_id FROM appointments WHERE customer_id = ? ORDER BY start";
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setInt(1, customerId);
@@ -134,6 +136,7 @@ public class AppointmentDaoImpl {
 
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
         LocalDateTime lastAppointmentEnd = null;
+        boolean hasOverlap = false;
 
         while (rs.next()) {
             LocalDateTime start = rs.getObject("start", LocalDateTime.class);
@@ -142,7 +145,7 @@ public class AppointmentDaoImpl {
 
             if (lastAppointmentEnd != null && start.isBefore(lastAppointmentEnd)) {
                 System.out.println("There is an overlap with an existing appointment.");
-                return true;
+                hasOverlap = true; // Set the flag to true if there is an overlap
             } else {
                 Appointment appointment = new Appointment(customerId, start, end, userId);
                 appointments.add(appointment);
@@ -150,8 +153,9 @@ public class AppointmentDaoImpl {
             }
         }
 
-        return false;
+        return new Pair<>(appointments, hasOverlap); // Return the appointment list and the flag indicating whether there are overlapping appointments
     }
+
     /** This method is used to retrieve all the contacts from the contact table
      * and returns a new set of appointments (via the getAppointmentsFromResultSet method)
      *
@@ -174,7 +178,6 @@ public class AppointmentDaoImpl {
      */
     public static int addAppointment (Connection connection, Appointment appointment) throws SQLException {
 
-            System.out.println(appointment.getUserId());
             String query = "INSERT INTO appointments (customer_id, title, description, location, contact_id, type, start, end, user_id) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

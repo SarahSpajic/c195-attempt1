@@ -78,11 +78,13 @@ public class CustomerController implements Initializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         firstLevelDivisionDao = new FirstLevelDivisionDaoImpl();
+        firstLevelDivisionDao.setConnection(connection);
         customerDao = new CustomerDaoImpl();
             countryComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
                 stateComboBox.setDisable(false);
-                populateDivisions(String.valueOf(newValue));
+                populateDivisions(newValue.getId());
             });
         countryComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             stateComboBox.setDisable(false);
@@ -107,10 +109,10 @@ public class CustomerController implements Initializable {
     /**
      * This method populates the division drop down box
      */
-    private void populateDivisions(String countryName) {
+    private void populateDivisions(int countryId) {
         try {
             Country selectedCountry = countryComboBox.getSelectionModel().getSelectedItem();
-            if(selectedCountry == null){
+            if (selectedCountry == null) {
                 return;
             }
             ObservableList<FirstLevelDivision> divisions = firstLevelDivisionDao.getDivisionsByCountryID(selectedCountry.getId());
@@ -122,6 +124,7 @@ public class CustomerController implements Initializable {
         }
     }
 
+
     /**
      * This method adds a new customer to the database and the customer table
      */
@@ -132,7 +135,7 @@ public class CustomerController implements Initializable {
         String postalCode = postalCodeField.getText();
         String phoneNumber = phoneNumberField.getText();
         FirstLevelDivision selectedDivision = stateComboBox.getValue();
-
+        System.out.println(selectedDivision);
         if (selectedDivision == null) {
             return;
         }
@@ -174,7 +177,11 @@ public class CustomerController implements Initializable {
 
     }
 
-
+    /**
+     * This method updates the customer
+     * It includes  a lambda expression that filters the new customer properties and finds the customer
+     * to update based on the id and if a matching customer is found, that customer is removed, so this does not create duplicates.
+     */
     @FXML
 
     private void updateCustomerAction(ActionEvent event) throws IOException {
